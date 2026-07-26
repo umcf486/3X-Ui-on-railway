@@ -2,15 +2,16 @@ worker_processes 1;
 events { worker_connections 1024; }
 
 http {
-    # تنظیمات برای شناسایی IP واقعی کاربران پشت پروکسی ابر آروان
+    # تنظیمات تشخیص IP واقعی کاربران از پشت پروکسی ابر آروان
     real_ip_header X-Forwarded-For;
-    
-    # رنج IPهای رسمی و استاندارد لبه ابر آروان
+    real_ip_recursive on;
+
+    # رنج‌های رسمی لبه ابر آروان
     set_real_ip_from 185.143.232.0/22;
     set_real_ip_from 92.114.16.0/20;
     set_real_ip_from 2.146.0.0/15;
     set_real_ip_from 5.7.128.0/18;
-    # (می‌توانید سایر رنج‌های رسمی آروان را نیز در صورت نیاز به این لیست اضافه کنید)
+    set_real_ip_from 185.215.232.0/22;
 
     server {
         listen ${NGINX_PORT};
@@ -37,13 +38,15 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
-        # مسیرهای اختصاصی اینباندها
+        # مسیرهای اختصاصی اینباندها (in1 تا in9)
         location /in1 {
             proxy_pass http://127.0.0.1:8081;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
         location /in2 {
             proxy_pass http://127.0.0.1:8082;
@@ -51,6 +54,8 @@ http {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
         location /in3 {
             proxy_pass http://127.0.0.1:8083;
@@ -58,6 +63,8 @@ http {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
         location /in4 {
             proxy_pass http://127.0.0.1:8084;
@@ -65,6 +72,8 @@ http {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
         location /in5 {
             proxy_pass http://127.0.0.1:8085;
@@ -72,6 +81,8 @@ http {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection="upgrade";
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
         location /in6 {
             proxy_pass http://127.0.0.1:8086;
@@ -79,6 +90,8 @@ http {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection="upgrade";
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
         location /in7 {
             proxy_pass http://127.0.0.1:8087;
@@ -86,6 +99,8 @@ http {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection="upgrade";
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
         location /in8 {
             proxy_pass http://127.0.0.1:8088;
@@ -93,6 +108,8 @@ http {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection="upgrade";
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
         location /in9 {
             proxy_pass http://127.0.0.1:8089;
@@ -100,9 +117,11 @@ http {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection="upgrade";
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
 
-        # مسیر عمومی
+        # مسیر عمومی (انتهای لیست)
         location / {
             proxy_pass http://127.0.0.1:8080;
             proxy_http_version 1.1;
